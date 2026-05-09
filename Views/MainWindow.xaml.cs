@@ -21,10 +21,9 @@ namespace NutriTrack.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow(User user, INutriRepository repository, IDispatcherService dispatcherService,  CalorieCalculator calculator)
+    public MainWindow(User user, INutriRepository repository, IDispatcherService dispatcherService, CalorieCalculator calculator, IFoodLogService foodLogService)
     {
         InitializeComponent();
-        
-        this.DataContext = new MainViewModel(repository, user, dispatcherService, calculator);
+        this.DataContext = new MainViewModel(repository, user, dispatcherService, calculator, foodLogService);
     }
 }

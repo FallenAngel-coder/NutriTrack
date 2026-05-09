@@ -1,13 +1,13 @@
 ﻿using System.Windows.Input;
-using NutriTrack.Data.Repositories;
 using NutriTrack.Helpers;
 using NutriTrack.Models;
+using NutriTrack.Services;
 
 namespace NutriTrack.ViewModels;
 
-public class LoginViewModel :  BaseViewModel
+public class LoginViewModel : BaseViewModel
 {
-    private readonly INutriRepository _repository;
+    private readonly IAuthService _authService;
     private string _username;
     private string _password;
     private string _errorMessage;
@@ -19,25 +19,20 @@ public class LoginViewModel :  BaseViewModel
     public ICommand LoginCommand { get; }
     public ICommand ShowRegisterCommand { get; }
 
-    public LoginViewModel(INutriRepository repository)
+    public LoginViewModel(IAuthService authService)
     {
-        _repository = repository;
+        _authService = authService;
         LoginCommand = new RelayCommand(async _ => await Login());
         ShowRegisterCommand = new RelayCommand(_ => OnShowRegister?.Invoke());
     }
 
     private async Task Login()
     {
-        var user = await _repository.GetUserByUsernameAsync(Username);
-        
-        if (user != null && BCrypt.Net.BCrypt.Verify(Password, user.Password))
-        {
+        var user = await _authService.LoginAsync(Username, Password);
+        if (user != null)
             OnLoginSuccess?.Invoke(user);
-        }
         else
-        {
             ErrorMessage = "Невірний логін або пароль";
-        }
     }
 
     public event Action<User> OnLoginSuccess;
